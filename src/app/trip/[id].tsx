@@ -1,4 +1,5 @@
 import type { Trip } from "@/db/schema";
+import { TripMap } from "@/components/trip/TripMap";
 import { deleteTrip, getTrip, updateTripCover } from "@/lib/api";
 import { optimizedImage } from "@/lib/image-url";
 import type { Place } from "@/lib/itinerary";
@@ -8,20 +9,18 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActionSheetIOS,
   ActivityIndicator,
   Alert,
   Dimensions,
   Linking,
-  Platform,
   Pressable,
   ScrollView,
   Text,
   View,
 } from "react-native";
-import MapView, { Marker } from "react-native-maps";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Path } from "react-native-svg";
 
@@ -31,7 +30,6 @@ const MUTED = "#8A94A6";
 const BORDER = "#E7EAF0";
 const BADGE_BG = "#E7F0FE";
 const CARD_BLUE = "#EAF1FE";
-const GREEN = "#2FA36B";
 
 const aiLogo = require("../../../assets/images/ai-logo.png");
 
@@ -73,7 +71,6 @@ export default function TripDetail() {
   const [uploadingCover, setUploadingCover] = useState(false);
   // Local uri shown immediately while the picked image uploads to ImageKit.
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -241,11 +238,6 @@ export default function TripDetail() {
       .flatMap((d) => d.places)
       .map((p, i) => ({ ...p, n: i + 1 })) ?? [];
 
-  const region = regionForPlaces(numberedPlaces);
-  const isWeb = Platform.OS === "web";
-  const NativeMap = !isWeb ? require("react-native-maps").default : null;
-  const NativeMarker = !isWeb ? require("react-native-maps").Marker : null;
-
   const title = `${trip.numDays} ${trip.numDays === 1 ? "Day" : "Days"} in ${cityShort(trip.destination)}`;
 
   // Local preview while uploading, otherwise the ImageKit-optimized remote cover.
@@ -403,91 +395,7 @@ export default function TripDetail() {
           />
         </View>
 
-        {/* ---- Map ---- */}
-        {numberedPlaces.length > 0 && region ? (
-          <>
-            <Text className="mt-7 px-5 text-[24px] font-extrabold tracking-tight text-[#0F1B2D]">
-              Map
-            </Text>
-            <View
-              className="mx-5 mt-3 overflow-hidden rounded-[20px]"
-              style={{
-                height: 230,
-                shadowColor: "#0F1B2D",
-                shadowOpacity: 0.08,
-                shadowRadius: 12,
-                shadowOffset: { width: 0, height: 4 },
-              }}
-            >
-              <>
-                {NativeMap && NativeMarker ? (
-                  <NativeMap
-                    ref={mapRef}
-                    style={{ flex: 1 }}
-                    initialRegion={region}
-                  >
-                    {numberedPlaces.map((p) => (
-                      <NativeMarker
-                        key={p.n}
-                        coordinate={{
-                          latitude: p.latitude,
-                          longitude: p.longitude,
-                        }}
-                        title={p.name}
-                        description={p.description}
-                      >
-                        <Pin
-                          n={p.n}
-                          color={p.kind === "restaurant" ? GREEN : BLUE}
-                        />
-                      </NativeMarker>
-                    ))}
-                  </NativeMap>
-                ) : (
-                  <MapView
-                    ref={mapRef}
-                    style={{ flex: 1 }}
-                    initialRegion={region}
-                  >
-                    {numberedPlaces.map((p) => (
-                      <Marker
-                        key={p.n}
-                        coordinate={{
-                          latitude: p.latitude,
-                          longitude: p.longitude,
-                        }}
-                        title={p.name}
-                        description={p.description}
-                      >
-                        <Pin
-                          n={p.n}
-                          color={p.kind === "restaurant" ? GREEN : BLUE}
-                        />
-                      </Marker>
-                    ))}
-                  </MapView>
-                )}
-              </>
-
-              {/* Recenter button */}
-              <Pressable
-                onPress={() =>
-                  region && mapRef.current?.animateToRegion(region, 400)
-                }
-                hitSlop={8}
-                className="absolute right-3 top-3 h-11 w-11 items-center justify-center rounded-full bg-white"
-                style={{
-                  shadowColor: "#0F1B2D",
-                  shadowOpacity: 0.15,
-                  shadowRadius: 6,
-                  shadowOffset: { width: 0, height: 2 },
-                }}
-              >
-                <SymbolView name="location.fill" size={18} tintColor={BLUE} />
-              </Pressable>
-            </View>
-          </>
-        ) : null}
+        <TripMap places={numberedPlaces} />
 
         {/* ---- Itinerary ---- */}
         {itinerary?.days.length ? (
@@ -713,48 +621,4 @@ function StatCol({
       <Text className="text-[15px] text-[#8A94A6]">{label}</Text>
     </View>
   );
-}
-
-function Pin({ n, color }: { n: number; color: string }) {
-  return (
-    <View className="items-center">
-      <View
-        className="h-8 w-8 items-center justify-center rounded-full border-2 border-white"
-        style={{ backgroundColor: color }}
-      >
-        <Text className="text-[13px] font-bold text-white">{n}</Text>
-      </View>
-      <View
-        style={{
-          width: 0,
-          height: 0,
-          borderLeftWidth: 5,
-          borderRightWidth: 5,
-          borderTopWidth: 7,
-          borderLeftColor: "transparent",
-          borderRightColor: "transparent",
-          borderTopColor: color,
-          marginTop: -1,
-        }}
-      />
-    </View>
-  );
-}
-
-type NumberedPlace = Place & { n: number };
-
-function regionForPlaces(places: NumberedPlace[]) {
-  if (places.length === 0) return null;
-  const lats = places.map((p) => p.latitude);
-  const lngs = places.map((p) => p.longitude);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  const minLng = Math.min(...lngs);
-  const maxLng = Math.max(...lngs);
-  return {
-    latitude: (minLat + maxLat) / 2,
-    longitude: (minLng + maxLng) / 2,
-    latitudeDelta: Math.max((maxLat - minLat) * 1.5, 0.03),
-    longitudeDelta: Math.max((maxLng - minLng) * 1.5, 0.03),
-  };
 }
