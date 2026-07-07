@@ -1,0 +1,11 @@
+node_modules/
+.expo/
+dist/
+build/
+coverage/
+package-lock.json
+skills-lock.json
+assets/expo.icon/
+design/
+legal/
+PLAN.md
