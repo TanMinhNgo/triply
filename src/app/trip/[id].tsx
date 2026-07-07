@@ -15,6 +15,7 @@ import {
   Alert,
   Dimensions,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -240,7 +241,10 @@ export default function TripDetail() {
       .flatMap((d) => d.places)
       .map((p, i) => ({ ...p, n: i + 1 })) ?? [];
 
-  const region = regionForPlaces(numberedPlaces);`r`n  const isWeb = Platform.OS === "web";`r`n  const NativeMap = !isWeb ? require("react-native-maps").default : null;`r`n  const NativeMarker = !isWeb ? require("react-native-maps").Marker : null;
+  const region = regionForPlaces(numberedPlaces);
+  const isWeb = Platform.OS === "web";
+  const NativeMap = !isWeb ? require("react-native-maps").default : null;
+  const NativeMarker = !isWeb ? require("react-native-maps").Marker : null;
 
   const title = `${trip.numDays} ${trip.numDays === 1 ? "Day" : "Days"} in ${cityShort(trip.destination)}`;
 
@@ -415,24 +419,55 @@ export default function TripDetail() {
                 shadowOffset: { width: 0, height: 4 },
               }}
             >
-              <>{NativeMap && NativeMarker ? (`r`n                <NativeMap ref={mapRef} style={{ flex: 1 }} initialRegion={region}>
-                {numberedPlaces.map((p) => (
-                  <NativeMarker
-                    key={p.n}
-                    coordinate={{
-                      latitude: p.latitude,
-                      longitude: p.longitude,
-                    }}
-                    title={p.name}
-                    description={p.description}
+              <>
+                {NativeMap && NativeMarker ? (
+                  <NativeMap
+                    ref={mapRef}
+                    style={{ flex: 1 }}
+                    initialRegion={region}
                   >
-                    <Pin
-                      n={p.n}
-                      color={p.kind === "restaurant" ? GREEN : BLUE}
-                    />
-                  </NativeMarker>
-                ))}
-              </MapView>
+                    {numberedPlaces.map((p) => (
+                      <NativeMarker
+                        key={p.n}
+                        coordinate={{
+                          latitude: p.latitude,
+                          longitude: p.longitude,
+                        }}
+                        title={p.name}
+                        description={p.description}
+                      >
+                        <Pin
+                          n={p.n}
+                          color={p.kind === "restaurant" ? GREEN : BLUE}
+                        />
+                      </NativeMarker>
+                    ))}
+                  </NativeMap>
+                ) : (
+                  <MapView
+                    ref={mapRef}
+                    style={{ flex: 1 }}
+                    initialRegion={region}
+                  >
+                    {numberedPlaces.map((p) => (
+                      <Marker
+                        key={p.n}
+                        coordinate={{
+                          latitude: p.latitude,
+                          longitude: p.longitude,
+                        }}
+                        title={p.name}
+                        description={p.description}
+                      >
+                        <Pin
+                          n={p.n}
+                          color={p.kind === "restaurant" ? GREEN : BLUE}
+                        />
+                      </Marker>
+                    ))}
+                  </MapView>
+                )}
+              </>
 
               {/* Recenter button */}
               <Pressable
@@ -723,4 +758,3 @@ function regionForPlaces(places: NumberedPlace[]) {
     longitudeDelta: Math.max((maxLng - minLng) * 1.5, 0.03),
   };
 }
-
