@@ -14,7 +14,14 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from "react-native-svg";
+import Svg, {
+  Circle,
+  Defs,
+  LinearGradient,
+  Path,
+  Rect,
+  Stop,
+} from "react-native-svg";
 import {
   type AssistantMessage,
   clearAssistantMessages,
@@ -82,8 +89,16 @@ function TypingDots() {
       Animated.loop(
         Animated.sequence([
           Animated.delay(i * 160),
-          Animated.timing(value, { toValue: 1, duration: 320, useNativeDriver: true }),
-          Animated.timing(value, { toValue: 0.3, duration: 320, useNativeDriver: true }),
+          Animated.timing(value, {
+            toValue: 1,
+            duration: 320,
+            useNativeDriver: true,
+          }),
+          Animated.timing(value, {
+            toValue: 0.3,
+            duration: 320,
+            useNativeDriver: true,
+          }),
         ]),
       ),
     );
@@ -128,9 +143,15 @@ export default function Assistant() {
       try {
         const stored = await getAssistantMessages(getToken);
         if (stored.length === 0) return;
-        const loaded = stored.map((m) => ({ id: m.id, role: m.role, content: m.content }));
+        const loaded = stored.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+        }));
         // Don't clobber anything the user sent while the transcript was loading.
-        setMessages((prev) => (prev.length <= 1 ? [GREETING, ...loaded] : prev));
+        setMessages((prev) =>
+          prev.length <= 1 ? [GREETING, ...loaded] : prev,
+        );
       } catch {
         // Keep the greeting-only state if the transcript can't be loaded.
       }
@@ -138,7 +159,9 @@ export default function Assistant() {
   }, [getToken]);
 
   function scrollToEnd() {
-    requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: false }));
+    requestAnimationFrame(() =>
+      scrollRef.current?.scrollToEnd({ animated: false }),
+    );
   }
 
   async function handleSend() {
@@ -154,18 +177,27 @@ export default function Assistant() {
   async function sendText(text: string) {
     if (!text || sending) return;
 
-    const userMessage: ChatMessage = { id: nextId(), role: "user", content: text };
+    const userMessage: ChatMessage = {
+      id: nextId(),
+      role: "user",
+      content: text,
+    };
     const assistantId = nextId();
     const history = [...messages, userMessage];
     // Append the user's message plus an empty assistant bubble that fills in as
     // tokens stream. The empty bubble renders the typing indicator until then.
-    setMessages([...history, { id: assistantId, role: "assistant", content: "" }]);
+    setMessages([
+      ...history,
+      { id: assistantId, role: "assistant", content: "" },
+    ]);
     setSending(true);
     scrollToEnd();
 
     const setAssistant = (update: (content: string) => string) =>
       setMessages((prev) =>
-        prev.map((m) => (m.id === assistantId ? { ...m, content: update(m.content) } : m)),
+        prev.map((m) =>
+          m.id === assistantId ? { ...m, content: update(m.content) } : m,
+        ),
       );
 
     try {
@@ -176,10 +208,15 @@ export default function Assistant() {
       );
       // Guard against an empty stream (connection dropped before any token).
       setAssistant((content) =>
-        content.length ? content : "Sorry — I didn't get a response. Please try again.",
+        content.length
+          ? content
+          : "Sorry — I didn't get a response. Please try again.",
       );
     } catch {
-      setAssistant(() => "Sorry — I couldn't reach the assistant just now. Please try again.");
+      setAssistant(
+        () =>
+          "Sorry — I couldn't reach the assistant just now. Please try again.",
+      );
     } finally {
       setSending(false);
       scrollToEnd();
@@ -207,7 +244,10 @@ export default function Assistant() {
               await clearAssistantMessages(getToken);
             } catch {
               setMessages(previous);
-              Alert.alert("Couldn't clear the conversation", "Please try again.");
+              Alert.alert(
+                "Couldn't clear the conversation",
+                "Please try again.",
+              );
             }
           },
         },
@@ -220,7 +260,10 @@ export default function Assistant() {
       <StatusBar style="dark" />
 
       {/* Header */}
-      <View style={{ paddingTop: insets.top + 8 }} className="bg-white px-5 pb-4">
+      <View
+        style={{ paddingTop: insets.top + 8 }}
+        className="bg-white px-5 pb-4"
+      >
         <View className="flex-row items-center">
           <View className="h-[50px] w-[50px] items-center justify-center rounded-full bg-[#E7EEFB]">
             <RobotAvatar size={50} />
@@ -229,7 +272,9 @@ export default function Assistant() {
             <Text className="text-[21px] font-extrabold tracking-tight text-[#0F1B2D]">
               Assistant
             </Text>
-            <Text className="mt-0.5 text-[13px] text-[#8A94A6]">Your AI travel companion</Text>
+            <Text className="mt-0.5 text-[13px] text-[#8A94A6]">
+              Your AI travel companion
+            </Text>
           </View>
           <Pressable
             onPress={handleClear}
@@ -251,7 +296,11 @@ export default function Assistant() {
         <ScrollView
           ref={scrollRef}
           className="flex-1"
-          contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: 12 }}
+          contentContainerStyle={{
+            paddingHorizontal: 12,
+            paddingTop: 12,
+            paddingBottom: 12,
+          }}
           showsVerticalScrollIndicator={false}
           onContentSizeChange={scrollToEnd}
         >
@@ -312,7 +361,11 @@ export default function Assistant() {
             className="ml-2.5 h-[52px] w-[52px] items-center justify-center rounded-full"
             style={{ backgroundColor: canSend ? "#4388E7" : "#F2F3F5" }}
           >
-            <SymbolView name="arrow.up" size={20} tintColor={canSend ? "#FFFFFF" : "#9AA2AF"} />
+            <SymbolView
+              name="arrow.up"
+              size={20}
+              tintColor={canSend ? "#FFFFFF" : "#9AA2AF"}
+            />
           </Pressable>
         </View>
       </KeyboardAvoidingView>

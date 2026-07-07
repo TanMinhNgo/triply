@@ -2,7 +2,10 @@ import OpenAI from "openai";
 import { z } from "zod";
 import { db } from "@/db";
 import { assistantMessages } from "@/db/schema";
-import { ASSISTANT_META_SEPARATOR, type AssistantStreamMeta } from "@/lib/assistant-stream";
+import {
+  ASSISTANT_META_SEPARATOR,
+  type AssistantStreamMeta,
+} from "@/lib/assistant-stream";
 import { getAuthUserId, unauthorized } from "@/lib/auth";
 import { serverEnv } from "@/lib/env";
 
@@ -36,11 +39,20 @@ const chatSchema = z.object({
 
 // Persists one message to the user's assistant transcript. Best-effort: a DB
 // failure is logged but never breaks the live chat stream.
-async function persistMessage(userId: string, role: "user" | "assistant", content: string) {
+async function persistMessage(
+  userId: string,
+  role: "user" | "assistant",
+  content: string,
+) {
   try {
-    await db.insert(assistantMessages).values({ id: crypto.randomUUID(), userId, role, content });
+    await db
+      .insert(assistantMessages)
+      .values({ id: crypto.randomUUID(), userId, role, content });
   } catch (error) {
-    console.error(`[POST /api/assistant] failed to persist ${role} message:`, error);
+    console.error(
+      `[POST /api/assistant] failed to persist ${role} message:`,
+      error,
+    );
   }
 }
 
@@ -71,7 +83,10 @@ export async function POST(request: Request) {
     completion = await openStream(parsed.data.messages);
   } catch (error) {
     console.error("[POST /api/assistant] chat failed:", error);
-    return Response.json({ error: "Failed to reach the assistant" }, { status: 500 });
+    return Response.json(
+      { error: "Failed to reach the assistant" },
+      { status: 500 },
+    );
   }
 
   // Save the user's new turn (the last message) now, so it persists even if the
@@ -117,11 +132,14 @@ export async function POST(request: Request) {
                 output_tokens: usage.completion_tokens,
                 total_tokens: usage.total_tokens,
                 cached_tokens: usage.prompt_tokens_details?.cached_tokens,
-                reasoning_tokens: usage.completion_tokens_details?.reasoning_tokens,
+                reasoning_tokens:
+                  usage.completion_tokens_details?.reasoning_tokens,
               }
             : null,
         };
-        controller.enqueue(encoder.encode(ASSISTANT_META_SEPARATOR + JSON.stringify(meta)));
+        controller.enqueue(
+          encoder.encode(ASSISTANT_META_SEPARATOR + JSON.stringify(meta)),
+        );
         controller.close();
       }
     },

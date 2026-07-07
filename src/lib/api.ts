@@ -1,7 +1,10 @@
 import * as Sentry from "@sentry/react-native";
 import Constants from "expo-constants";
 import { fetch as expoFetch } from "expo/fetch";
-import { ASSISTANT_META_SEPARATOR, type AssistantStreamMeta } from "@/lib/assistant-stream";
+import {
+  ASSISTANT_META_SEPARATOR,
+  type AssistantStreamMeta,
+} from "@/lib/assistant-stream";
 import type { Trip } from "@/db/schema";
 import type { TripStatus } from "@/lib/trip-status";
 
@@ -67,7 +70,8 @@ async function authedFetch(
         // One wide event per failed request so production issues are searchable
         // by endpoint / status in Sentry's Logs UI. 5xx is a server fault
         // (error); 4xx is usually a client/validation issue (warn).
-        const log = res.status >= 500 ? Sentry.logger.error : Sentry.logger.warn;
+        const log =
+          res.status >= 500 ? Sentry.logger.error : Sentry.logger.warn;
         log("API request failed", {
           endpoint: path,
           method,
@@ -108,7 +112,13 @@ export async function createTrip(
 // Lightweight trip shape returned by the list endpoint (cards only — no itinerary).
 export type TripSummary = Pick<
   Trip,
-  "id" | "destination" | "numDays" | "status" | "coverImageUrl" | "budgetBreakdown" | "createdAt"
+  | "id"
+  | "destination"
+  | "numDays"
+  | "status"
+  | "coverImageUrl"
+  | "budgetBreakdown"
+  | "createdAt"
 >;
 
 // Lists the current user's trips (newest first) for the Trips tab.
@@ -134,7 +144,10 @@ export async function getTrip(getToken: GetToken, id: string): Promise<Trip> {
 }
 
 // Deletes a trip (and its chat messages, via cascade).
-export async function deleteTrip(getToken: GetToken, id: string): Promise<void> {
+export async function deleteTrip(
+  getToken: GetToken,
+  id: string,
+): Promise<void> {
   await authedFetch(getToken, `/api/trips/${id}`, { method: "DELETE" });
 }
 
@@ -154,7 +167,9 @@ const ASSISTANT_PROVIDER = "openai";
 function apiUrl(path: string): string {
   const origin =
     (globalThis as { location?: { origin?: string } }).location?.origin ??
-    (Constants.expoConfig?.hostUri ? `http://${Constants.expoConfig.hostUri}` : null);
+    (Constants.expoConfig?.hostUri
+      ? `http://${Constants.expoConfig.hostUri}`
+      : null);
   return origin ? new URL(path, origin).toString() : path;
 }
 
@@ -171,14 +186,20 @@ function applyStreamMeta(span: Sentry.Span, meta: AssistantStreamMeta) {
   if (meta.model) span.setAttribute("gen_ai.response.model", meta.model);
   const u = meta.usage;
   if (!u) return;
-  if (u.input_tokens != null) span.setAttribute("gen_ai.usage.input_tokens", u.input_tokens);
-  if (u.output_tokens != null) span.setAttribute("gen_ai.usage.output_tokens", u.output_tokens);
-  if (u.total_tokens != null) span.setAttribute("gen_ai.usage.total_tokens", u.total_tokens);
+  if (u.input_tokens != null)
+    span.setAttribute("gen_ai.usage.input_tokens", u.input_tokens);
+  if (u.output_tokens != null)
+    span.setAttribute("gen_ai.usage.output_tokens", u.output_tokens);
+  if (u.total_tokens != null)
+    span.setAttribute("gen_ai.usage.total_tokens", u.total_tokens);
   if (u.cached_tokens != null) {
     span.setAttribute("gen_ai.usage.input_tokens.cached", u.cached_tokens);
   }
   if (u.reasoning_tokens != null) {
-    span.setAttribute("gen_ai.usage.output_tokens.reasoning", u.reasoning_tokens);
+    span.setAttribute(
+      "gen_ai.usage.output_tokens.reasoning",
+      u.reasoning_tokens,
+    );
   }
 }
 
@@ -228,12 +249,16 @@ export async function streamAssistantMessage(
         } catch {
           // non-JSON error body — keep the default message
         }
-        Sentry.logger.warn("Assistant stream failed", { status: res.status, message });
+        Sentry.logger.warn("Assistant stream failed", {
+          status: res.status,
+          message,
+        });
         throw new ApiError(message, res.status);
       }
 
       const reader = res.body?.getReader();
-      if (!reader) throw new ApiError("The assistant returned no response stream", 502);
+      if (!reader)
+        throw new ApiError("The assistant returned no response stream", 502);
 
       // The body is the reply text, then ASSISTANT_META_SEPARATOR, then a JSON
       // metadata frame. Emit everything before the separator as reply text and
@@ -255,7 +280,10 @@ export async function streamAssistantMessage(
         if (replyPart) {
           if (firstTokenAt === null) {
             firstTokenAt = Date.now();
-            span.setAttribute("gen_ai.response.time_to_first_token", (firstTokenAt - startedAt) / 1000);
+            span.setAttribute(
+              "gen_ai.response.time_to_first_token",
+              (firstTokenAt - startedAt) / 1000,
+            );
           }
           reply += replyPart;
           onDelta(replyPart);
@@ -279,7 +307,9 @@ export async function streamAssistantMessage(
 
       span.setAttribute(
         "gen_ai.output.messages",
-        JSON.stringify([{ role: "assistant", parts: [{ type: "text", content: reply }] }]),
+        JSON.stringify([
+          { role: "assistant", parts: [{ type: "text", content: reply }] },
+        ]),
       );
 
       if (metaJson) {
@@ -310,7 +340,9 @@ export async function getAssistantMessages(
 }
 
 // Deletes the current user's entire assistant transcript.
-export async function clearAssistantMessages(getToken: GetToken): Promise<void> {
+export async function clearAssistantMessages(
+  getToken: GetToken,
+): Promise<void> {
   await authedFetch(getToken, "/api/assistant/messages", { method: "DELETE" });
 }
 

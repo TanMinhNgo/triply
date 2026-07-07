@@ -29,7 +29,10 @@ export async function PATCH(request: Request, { id }: Record<string, string>) {
 
   const parsed = bodySchema.safeParse(body);
   if (!parsed.success) {
-    return Response.json({ error: parsed.error.issues[0]?.message ?? "Invalid request" }, { status: 400 });
+    return Response.json(
+      { error: parsed.error.issues[0]?.message ?? "Invalid request" },
+      { status: 400 },
+    );
   }
 
   // Ensure the trip exists and belongs to the caller before doing any upload work.
@@ -46,7 +49,10 @@ export async function PATCH(request: Request, { id }: Record<string, string>) {
   try {
     coverImageUrl = await uploadTripCover(parsed.data.imageBase64, id);
   } catch (error) {
-    console.error(`[PATCH /api/trips/${id}/cover] ImageKit upload failed:`, error);
+    console.error(
+      `[PATCH /api/trips/${id}/cover] ImageKit upload failed:`,
+      error,
+    );
     return Response.json({ error: "Failed to upload image" }, { status: 502 });
   }
 

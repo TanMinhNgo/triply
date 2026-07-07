@@ -49,7 +49,10 @@ export default function Home() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 120 }}
+        contentContainerStyle={{
+          paddingTop: insets.top + 8,
+          paddingBottom: 120,
+        }}
       >
         {/* Greeting */}
         <Text className="px-6 text-4xl font-extrabold tracking-tight text-[#0F1B2D]">
@@ -61,12 +64,20 @@ export default function Home() {
           <Image
             source={worldImage}
             contentFit="contain"
-            style={{ position: "absolute", right: -52, top: 0, bottom: 0, width: 224 }}
+            style={{
+              position: "absolute",
+              right: -52,
+              top: 0,
+              bottom: 0,
+              width: 224,
+            }}
           />
           <View className="py-6 pl-6" style={{ paddingRight: 150 }}>
             <View className="flex-row items-center gap-1.5">
               <SymbolView name="sparkles" size={16} tintColor="#FFFFFF" />
-              <Text className="text-[15px] font-semibold text-white">AI Trip Planner</Text>
+              <Text className="text-[15px] font-semibold text-white">
+                AI Trip Planner
+              </Text>
             </View>
 
             <Text
@@ -85,7 +96,9 @@ export default function Home() {
               onPress={() => router.push("/generate-trip")}
               className="mt-5 flex-row items-center gap-2 self-start rounded-full bg-white px-5 py-3"
             >
-              <Text className="text-[15px] font-bold text-[#2F6BE4]">Get started</Text>
+              <Text className="text-[15px] font-bold text-[#2F6BE4]">
+                Get started
+              </Text>
               <SymbolView name="arrow.right" size={15} tintColor="#2F6BE4" />
             </Pressable>
           </View>
@@ -93,10 +106,19 @@ export default function Home() {
 
         {/* Your trips */}
         <View className="mt-8 flex-row items-center justify-between px-6">
-          <Text className="text-2xl font-extrabold tracking-tight text-[#0F1B2D]">Your trips</Text>
+          <Text className="text-2xl font-extrabold tracking-tight text-[#0F1B2D]">
+            Your trips
+          </Text>
           <Pressable className="flex-row items-center gap-1">
-            <Text className="text-[16px] font-semibold text-[#2F6BE4]">See all</Text>
-            <SymbolView name="chevron.right" size={13} tintColor="#2F6BE4" weight="semibold" />
+            <Text className="text-[16px] font-semibold text-[#2F6BE4]">
+              See all
+            </Text>
+            <SymbolView
+              name="chevron.right"
+              size={13}
+              tintColor="#2F6BE4"
+              weight="semibold"
+            />
           </Pressable>
         </View>
 
@@ -119,13 +141,21 @@ export default function Home() {
             />
             <LinearGradient
               colors={["transparent", "rgba(0,0,0,0.55)"]}
-              style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 120 }}
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: 120,
+              }}
             />
 
             {/* Days badge */}
             <View className="absolute right-3 top-3 flex-row items-center gap-1.5 rounded-full bg-black/45 px-3 py-1.5">
               <SymbolView name="calendar" size={13} tintColor="#FFFFFF" />
-              <Text className="text-[13px] font-semibold text-white">3 days</Text>
+              <Text className="text-[13px] font-semibold text-white">
+                3 days
+              </Text>
             </View>
 
             {/* Title overlay */}
@@ -135,7 +165,9 @@ export default function Home() {
               </Text>
               <View className="mt-0.5 flex-row items-center gap-1">
                 <SymbolView name="mappin" size={14} tintColor="#FFFFFF" />
-                <Text className="text-[15px] font-medium text-white/95">Osaka</Text>
+                <Text className="text-[15px] font-medium text-white/95">
+                  Osaka
+                </Text>
               </View>
             </View>
           </View>
@@ -144,11 +176,20 @@ export default function Home() {
           <View className="flex-row items-center justify-between px-4 py-3.5">
             <View className="flex-row items-center gap-2">
               <SymbolView name="wallet.bifold" size={17} tintColor="#8A94A6" />
-              <Text className="text-[15px] font-medium text-[#8A94A6]">Est. $540 / person</Text>
+              <Text className="text-[15px] font-medium text-[#8A94A6]">
+                Est. $540 / person
+              </Text>
             </View>
             <Pressable className="flex-row items-center gap-1">
-              <Text className="text-[15px] font-semibold text-[#2F6BE4]">View</Text>
-              <SymbolView name="chevron.right" size={12} tintColor="#2F6BE4" weight="semibold" />
+              <Text className="text-[15px] font-semibold text-[#2F6BE4]">
+                View
+              </Text>
+              <SymbolView
+                name="chevron.right"
+                size={12}
+                tintColor="#2F6BE4"
+                weight="semibold"
+              />
             </Pressable>
           </View>
         </View>
@@ -161,10 +202,17 @@ export default function Home() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 16, gap: 14 }}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingTop: 16,
+            gap: 14,
+          }}
         >
           {POPULAR_DESTINATIONS.map((dest) => (
-            <View key={dest.id} className="h-[230px] w-[168px] overflow-hidden rounded-[24px]">
+            <View
+              key={dest.id}
+              className="h-[230px] w-[168px] overflow-hidden rounded-[24px]"
+            >
               <Image
                 source={dest.image}
                 contentFit="cover"
@@ -172,13 +220,21 @@ export default function Home() {
               />
               <LinearGradient
                 colors={["transparent", "rgba(0,0,0,0.5)"]}
-                style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 120 }}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: 120,
+                }}
               />
 
               {/* Rating badge */}
               <View className="absolute right-2.5 top-2.5 flex-row items-center gap-1 rounded-full bg-black/45 px-2.5 py-1">
                 <SymbolView name="star.fill" size={12} tintColor="#F5B942" />
-                <Text className="text-[13px] font-semibold text-white">{dest.rating}</Text>
+                <Text className="text-[13px] font-semibold text-white">
+                  {dest.rating}
+                </Text>
               </View>
 
               {/* Name */}
@@ -186,7 +242,9 @@ export default function Home() {
                 <Text className="text-[19px] font-extrabold tracking-tight text-white">
                   {dest.name}
                 </Text>
-                <Text className="text-[13px] font-medium text-white/85">{dest.country}</Text>
+                <Text className="text-[13px] font-medium text-white/85">
+                  {dest.country}
+                </Text>
               </View>
             </View>
           ))}

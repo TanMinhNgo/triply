@@ -15,7 +15,10 @@ export default function HomeLayout() {
     <NativeTabs>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: "house", selected: "house.fill" }} md="home" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "house", selected: "house.fill" }}
+          md="home"
+        />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="assistant">
         <NativeTabs.Trigger.Label>Assistant</NativeTabs.Trigger.Label>
@@ -23,11 +26,17 @@ export default function HomeLayout() {
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="trips">
         <NativeTabs.Trigger.Label>Trips</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: "map", selected: "map.fill" }} md="map" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "map", selected: "map.fill" }}
+          md="map"
+        />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
         <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon sf={{ default: "person", selected: "person.fill" }} md="person" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "person", selected: "person.fill" }}
+          md="person"
+        />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

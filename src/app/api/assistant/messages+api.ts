@@ -27,6 +27,8 @@ export async function DELETE(request: Request) {
   const auth = await getAuthUserId(request);
   if (!auth.userId) return unauthorized(auth.reason);
 
-  await db.delete(assistantMessages).where(eq(assistantMessages.userId, auth.userId));
+  await db
+    .delete(assistantMessages)
+    .where(eq(assistantMessages.userId, auth.userId));
   return new Response(null, { status: 204 });
 }

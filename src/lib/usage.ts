@@ -35,9 +35,14 @@ export async function reserveGeneration(userId: string): Promise<boolean> {
 // Refunds a previously reserved generation for the given day (floored at 0).
 // Used when generation terminally fails so a failed trip doesn't consume quota
 // (see PLAN: "terminal failure → failed, quota untouched").
-export async function refundGeneration(userId: string, day: string): Promise<void> {
+export async function refundGeneration(
+  userId: string,
+  day: string,
+): Promise<void> {
   await db
     .update(generationUsage)
     .set({ count: sql`GREATEST(${generationUsage.count} - 1, 0)` })
-    .where(sql`${generationUsage.userId} = ${userId} AND ${generationUsage.day} = ${day}`);
+    .where(
+      sql`${generationUsage.userId} = ${userId} AND ${generationUsage.day} = ${day}`,
+    );
 }

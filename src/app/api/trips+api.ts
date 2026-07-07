@@ -33,7 +33,9 @@ export async function GET(request: Request) {
 // `@/lib/api`. Server-side validation is authoritative regardless of client checks.
 const createTripSchema = z.object({
   destination: z.string().trim().min(1).max(120),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "startDate must be YYYY-MM-DD"),
+  startDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "startDate must be YYYY-MM-DD"),
   numDays: z.number().int().min(1).max(30),
   numTravelers: z.number().int().min(1).max(20),
   budgetTier: z.enum(["budget", "comfort", "luxury"]),
@@ -65,14 +67,24 @@ export async function POST(request: Request) {
   const reserved = await reserveGeneration(userId);
   if (!reserved) {
     return Response.json(
-      { error: "You've reached the daily limit for generating trips. Try again tomorrow." },
+      {
+        error:
+          "You've reached the daily limit for generating trips. Try again tomorrow.",
+      },
       { status: 429 },
     );
   }
 
   const tripId = crypto.randomUUID();
-  const { destination, startDate, numDays, numTravelers, budgetTier, interests, pace } =
-    parsed.data;
+  const {
+    destination,
+    startDate,
+    numDays,
+    numTravelers,
+    budgetTier,
+    interests,
+    pace,
+  } = parsed.data;
 
   try {
     await db.insert(trips).values({
@@ -95,9 +107,15 @@ export async function POST(request: Request) {
     await refundGeneration(userId, usageDay()).catch(() => {});
     // Clean up the trip row if it was inserted but the queue start failed, so we
     // don't leave stale `status: "pending"` data behind. No-op if insert failed.
-    await db.delete(trips).where(eq(trips.id, tripId)).catch(() => {});
+    await db
+      .delete(trips)
+      .where(eq(trips.id, tripId))
+      .catch(() => {});
     console.error("[POST /api/trips] failed to create trip:", error);
-    return Response.json({ error: "Failed to start trip generation" }, { status: 500 });
+    return Response.json(
+      { error: "Failed to start trip generation" },
+      { status: 500 },
+    );
   }
 
   return Response.json({ id: tripId, status: "pending" }, { status: 201 });

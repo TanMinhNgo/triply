@@ -65,25 +65,32 @@ export default function TripDetail() {
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [openDays, setOpenDays] = useState<Record<number, boolean>>({ 1: true });
+  const [openDays, setOpenDays] = useState<Record<number, boolean>>({
+    1: true,
+  });
   const [deleting, setDeleting] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   // Local uri shown immediately while the picked image uploads to ImageKit.
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
-  const mapRef = useRef<MapView>(null);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     if (!id) return;
     let active = true;
     getTrip(getToken, id)
       .then((data) => active && setTrip(data))
-      .catch((e) => active && setError(e instanceof Error ? e.message : "Failed to load trip"));
+      .catch(
+        (e) =>
+          active &&
+          setError(e instanceof Error ? e.message : "Failed to load trip"),
+      );
     return () => {
       active = false;
     };
   }, [id, getToken]);
 
-  const goBack = () => (router.canGoBack() ? router.back() : router.replace("/"));
+  const goBack = () =>
+    router.canGoBack() ? router.back() : router.replace("/");
 
   const doDelete = async () => {
     if (!id || deleting) return;
@@ -93,7 +100,10 @@ export default function TripDetail() {
       router.replace("/");
     } catch (e) {
       setDeleting(false);
-      Alert.alert("Couldn't delete trip", e instanceof Error ? e.message : "Please try again.");
+      Alert.alert(
+        "Couldn't delete trip",
+        e instanceof Error ? e.message : "Please try again.",
+      );
     }
   };
 
@@ -144,7 +154,10 @@ export default function TripDetail() {
 
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
-      Alert.alert("Photo access needed", "Allow photo access to set a custom cover image.");
+      Alert.alert(
+        "Photo access needed",
+        "Allow photo access to set a custom cover image.",
+      );
       return;
     }
 
@@ -166,14 +179,26 @@ export default function TripDetail() {
     setCoverPreview(asset.uri);
     setUploadingCover(true);
     try {
-      const { coverImageUrl } = await updateTripCover(getToken, id, asset.base64);
+      const { coverImageUrl } = await updateTripCover(
+        getToken,
+        id,
+        asset.base64,
+      );
       setTrip((prev) =>
         prev
-          ? { ...prev, coverImageUrl, coverPhotographer: null, coverPhotographerUrl: null }
+          ? {
+              ...prev,
+              coverImageUrl,
+              coverPhotographer: null,
+              coverPhotographerUrl: null,
+            }
           : prev,
       );
     } catch (e) {
-      Alert.alert("Upload failed", e instanceof Error ? e.message : "Please try again.");
+      Alert.alert(
+        "Upload failed",
+        e instanceof Error ? e.message : "Please try again.",
+      );
     } finally {
       setUploadingCover(false);
       setCoverPreview(null);
@@ -184,8 +209,13 @@ export default function TripDetail() {
     return (
       <View className="flex-1 items-center justify-center bg-white px-8">
         <StatusBar style="dark" />
-        <Text className="text-[18px] font-semibold text-[#0F1B2D]">{error}</Text>
-        <Pressable onPress={goBack} className="mt-6 rounded-full bg-[#2E6FF2] px-6 py-3">
+        <Text className="text-[18px] font-semibold text-[#0F1B2D]">
+          {error}
+        </Text>
+        <Pressable
+          onPress={goBack}
+          className="mt-6 rounded-full bg-[#2E6FF2] px-6 py-3"
+        >
           <Text className="text-[16px] font-bold text-white">Go back</Text>
         </Pressable>
       </View>
@@ -206,9 +236,11 @@ export default function TripDetail() {
 
   // Flatten every place across days for the map + sequential numbering.
   const numberedPlaces =
-    itinerary?.days.flatMap((d) => d.places).map((p, i) => ({ ...p, n: i + 1 })) ?? [];
+    itinerary?.days
+      .flatMap((d) => d.places)
+      .map((p, i) => ({ ...p, n: i + 1 })) ?? [];
 
-  const region = regionForPlaces(numberedPlaces);
+  const region = regionForPlaces(numberedPlaces);`r`n  const isWeb = Platform.OS === "web";`r`n  const NativeMap = !isWeb ? require("react-native-maps").default : null;`r`n  const NativeMarker = !isWeb ? require("react-native-maps").Marker : null;
 
   const title = `${trip.numDays} ${trip.numDays === 1 ? "Day" : "Days"} in ${cityShort(trip.destination)}`;
 
@@ -245,9 +277,19 @@ export default function TripDetail() {
 
           {/* Bottom scrim so the title/attribution stay legible over bright photos */}
           <LinearGradient
-            colors={["transparent", "rgba(11,20,34,0.15)", "rgba(11,20,34,0.72)"]}
+            colors={[
+              "transparent",
+              "rgba(11,20,34,0.15)",
+              "rgba(11,20,34,0.72)",
+            ]}
             locations={[0, 0.45, 1]}
-            style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "68%" }}
+            style={{
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: "68%",
+            }}
           />
 
           {/* Curved bottom arch (white, blends into page) */}
@@ -269,7 +311,12 @@ export default function TripDetail() {
             style={{ top: insets.top + 4 }}
             className="absolute left-5 h-11 w-11 items-center justify-center rounded-full bg-white"
           >
-            <SymbolView name="chevron.left" size={18} tintColor={INK} weight="semibold" />
+            <SymbolView
+              name="chevron.left"
+              size={18}
+              tintColor={INK}
+              weight="semibold"
+            />
           </Pressable>
           <Pressable
             onPress={changeCover}
@@ -277,7 +324,12 @@ export default function TripDetail() {
             style={{ top: insets.top + 4, right: 72 }}
             className="absolute h-11 w-11 items-center justify-center rounded-full bg-white"
           >
-            <SymbolView name="camera.fill" size={22} tintColor={INK} weight="semibold" />
+            <SymbolView
+              name="camera.fill"
+              size={22}
+              tintColor={INK}
+              weight="semibold"
+            />
           </Pressable>
           <Pressable
             onPress={openMenu}
@@ -285,11 +337,19 @@ export default function TripDetail() {
             style={{ top: insets.top + 4 }}
             className="absolute right-5 h-11 w-11 items-center justify-center rounded-full bg-white"
           >
-            <SymbolView name="trash" size={20} tintColor="#E5484D" weight="semibold" />
+            <SymbolView
+              name="trash"
+              size={20}
+              tintColor="#E5484D"
+              weight="semibold"
+            />
           </Pressable>
 
           {/* Title block */}
-          <View className="absolute left-5 right-5" style={{ bottom: COVER_ARCH + 20 }}>
+          <View
+            className="absolute left-5 right-5"
+            style={{ bottom: COVER_ARCH + 20 }}
+          >
             <View className="flex-row items-center gap-1.5">
               <SymbolView name="mappin" size={15} tintColor="#FFFFFF" />
               <Text className="text-[16px] font-semibold text-white">
@@ -302,14 +362,17 @@ export default function TripDetail() {
             {trip.coverPhotographer ? (
               <Pressable
                 onPress={() =>
-                  trip.coverPhotographerUrl && Linking.openURL(trip.coverPhotographerUrl)
+                  trip.coverPhotographerUrl &&
+                  Linking.openURL(trip.coverPhotographerUrl)
                 }
                 className="mt-1.5 flex-row justify-end"
               >
                 <Text className="text-[13px] text-white/85">
                   Photo by{" "}
-                  <Text className="font-semibold text-white">{trip.coverPhotographer}</Text> on{" "}
-                  <Text className="font-semibold text-white">Unsplash</Text>
+                  <Text className="font-semibold text-white">
+                    {trip.coverPhotographer}
+                  </Text>{" "}
+                  on <Text className="font-semibold text-white">Unsplash</Text>
                 </Text>
               </Pressable>
             ) : null}
@@ -323,7 +386,11 @@ export default function TripDetail() {
             value={`${trip.numDays} ${trip.numDays === 1 ? "day" : "days"}`}
             label="Duration"
           />
-          <StatCol icon="person.2" value={`${trip.numTravelers}`} label="Travelers" />
+          <StatCol
+            icon="person.2"
+            value={`${trip.numTravelers}`}
+            label="Travelers"
+          />
           <StatCol
             icon="wallet.bifold"
             value={budget ? money(budget.currency, budget.totalPerPerson) : "—"}
@@ -348,22 +415,30 @@ export default function TripDetail() {
                 shadowOffset: { width: 0, height: 4 },
               }}
             >
-              <MapView ref={mapRef} style={{ flex: 1 }} initialRegion={region}>
+              <>{NativeMap && NativeMarker ? (`r`n                <NativeMap ref={mapRef} style={{ flex: 1 }} initialRegion={region}>
                 {numberedPlaces.map((p) => (
-                  <Marker
+                  <NativeMarker
                     key={p.n}
-                    coordinate={{ latitude: p.latitude, longitude: p.longitude }}
+                    coordinate={{
+                      latitude: p.latitude,
+                      longitude: p.longitude,
+                    }}
                     title={p.name}
                     description={p.description}
                   >
-                    <Pin n={p.n} color={p.kind === "restaurant" ? GREEN : BLUE} />
-                  </Marker>
+                    <Pin
+                      n={p.n}
+                      color={p.kind === "restaurant" ? GREEN : BLUE}
+                    />
+                  </NativeMarker>
                 ))}
               </MapView>
 
               {/* Recenter button */}
               <Pressable
-                onPress={() => region && mapRef.current?.animateToRegion(region, 400)}
+                onPress={() =>
+                  region && mapRef.current?.animateToRegion(region, 400)
+                }
                 hitSlop={8}
                 className="absolute right-3 top-3 h-11 w-11 items-center justify-center rounded-full bg-white"
                 style={{
@@ -385,7 +460,9 @@ export default function TripDetail() {
             <Text className="mt-8 px-5 text-[24px] font-extrabold tracking-tight text-[#0F1B2D]">
               Itinerary
             </Text>
-            <Text className="mt-1 px-5 text-[16px] text-[#8A94A6]">Your day-by-day plan</Text>
+            <Text className="mt-1 px-5 text-[16px] text-[#8A94A6]">
+              Your day-by-day plan
+            </Text>
 
             <View className="mt-4 gap-4 px-5">
               {itinerary.days.map((day) => {
@@ -398,7 +475,10 @@ export default function TripDetail() {
                   >
                     <Pressable
                       onPress={() =>
-                        setOpenDays((prev) => ({ ...prev, [day.day]: !prev[day.day] }))
+                        setOpenDays((prev) => ({
+                          ...prev,
+                          [day.day]: !prev[day.day],
+                        }))
                       }
                       className="flex-row items-center gap-3 p-4"
                     >
@@ -406,12 +486,19 @@ export default function TripDetail() {
                         className="h-9 w-9 items-center justify-center rounded-full"
                         style={{ backgroundColor: BLUE }}
                       >
-                        <Text className="text-[15px] font-bold text-white">{day.day}</Text>
+                        <Text className="text-[15px] font-bold text-white">
+                          {day.day}
+                        </Text>
                       </View>
                       <View className="flex-1">
-                        <Text className="text-[17px] font-bold text-[#0F1B2D]">{day.title}</Text>
+                        <Text className="text-[17px] font-bold text-[#0F1B2D]">
+                          {day.title}
+                        </Text>
                         {!open ? (
-                          <Text numberOfLines={1} className="mt-0.5 text-[14px] text-[#8A94A6]">
+                          <Text
+                            numberOfLines={1}
+                            className="mt-0.5 text-[14px] text-[#8A94A6]"
+                          >
                             {day.summary}
                           </Text>
                         ) : null}
@@ -426,10 +513,15 @@ export default function TripDetail() {
 
                     {open ? (
                       <View className="px-4 pb-4">
-                        <Text className="text-[15px] leading-6 text-[#5A6472]">{day.summary}</Text>
+                        <Text className="text-[15px] leading-6 text-[#5A6472]">
+                          {day.summary}
+                        </Text>
                         <View className="mt-3 gap-3">
                           {day.places.map((place, i) => (
-                            <View key={`${day.day}-${i}`} className="flex-row gap-3">
+                            <View
+                              key={`${day.day}-${i}`}
+                              className="flex-row gap-3"
+                            >
                               <View className="mt-0.5 h-9 w-9 items-center justify-center rounded-full bg-white">
                                 <SymbolView
                                   name={PLACE_ICON[place.kind]}
@@ -466,10 +558,18 @@ export default function TripDetail() {
             <Text className="mt-8 px-5 text-[24px] font-extrabold tracking-tight text-[#0F1B2D]">
               Budget
             </Text>
-            <View className="mx-5 mt-3 rounded-[20px] border p-4" style={{ borderColor: BORDER }}>
+            <View
+              className="mx-5 mt-3 rounded-[20px] border p-4"
+              style={{ borderColor: BORDER }}
+            >
               <View className="flex-row items-center justify-between pb-3">
-                <Text className="text-[16px] font-bold text-[#0F1B2D]">Total per person</Text>
-                <Text className="text-[20px] font-extrabold" style={{ color: BLUE }}>
+                <Text className="text-[16px] font-bold text-[#0F1B2D]">
+                  Total per person
+                </Text>
+                <Text
+                  className="text-[20px] font-extrabold"
+                  style={{ color: BLUE }}
+                >
                   {money(budget.currency, budget.totalPerPerson)}
                 </Text>
               </View>
@@ -480,7 +580,9 @@ export default function TripDetail() {
                   style={{ borderColor: BORDER }}
                 >
                   <View className="flex-1 pr-3">
-                    <Text className="text-[15px] font-bold text-[#0F1B2D]">{c.name}</Text>
+                    <Text className="text-[15px] font-bold text-[#0F1B2D]">
+                      {c.name}
+                    </Text>
                     <Text className="text-[13px] text-[#8A94A6]">{c.note}</Text>
                   </View>
                   <Text className="text-[15px] font-semibold text-[#0F1B2D]">
@@ -500,12 +602,19 @@ export default function TripDetail() {
             </Text>
             <View className="mt-3 gap-3 px-5">
               {itinerary.hotels.map((hotel, i) => (
-                <View key={i} className="rounded-[20px] border p-4" style={{ borderColor: BORDER }}>
+                <View
+                  key={i}
+                  className="rounded-[20px] border p-4"
+                  style={{ borderColor: BORDER }}
+                >
                   <View className="flex-row items-center justify-between">
                     <Text className="flex-1 pr-3 text-[16px] font-bold text-[#0F1B2D]">
                       {hotel.name}
                     </Text>
-                    <Text className="text-[14px] font-semibold" style={{ color: BLUE }}>
+                    <Text
+                      className="text-[14px] font-semibold"
+                      style={{ color: BLUE }}
+                    >
                       {hotel.priceEstimate}
                     </Text>
                   </View>
@@ -524,7 +633,11 @@ export default function TripDetail() {
         style={{ bottom: insets.bottom + 18, right: 18 }}
         className="absolute h-16 w-16 items-center justify-center"
       >
-        <Image source={aiLogo} style={{ width: 64, height: 64 }} contentFit="contain" />
+        <Image
+          source={aiLogo}
+          style={{ width: 64, height: 64 }}
+          contentFit="contain"
+        />
       </Pressable>
 
       {/* Blocking overlay while the delete request is in flight */}
@@ -558,7 +671,9 @@ function StatCol({
       >
         <SymbolView name={icon} size={24} tintColor={BLUE} />
       </View>
-      <Text className="mt-3 text-[20px] font-extrabold text-[#0F1B2D]">{value}</Text>
+      <Text className="mt-3 text-[20px] font-extrabold text-[#0F1B2D]">
+        {value}
+      </Text>
       {sub ? <Text className="text-[14px] text-[#8A94A6]">{sub}</Text> : null}
       <Text className="text-[15px] text-[#8A94A6]">{label}</Text>
     </View>
@@ -608,3 +723,4 @@ function regionForPlaces(places: NumberedPlace[]) {
     longitudeDelta: Math.max((maxLng - minLng) * 1.5, 0.03),
   };
 }
+

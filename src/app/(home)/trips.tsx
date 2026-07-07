@@ -40,7 +40,13 @@ const cityShort = (destination: string) => destination.split(",")[0].trim();
 const titleCase = (value: string) =>
   value.replace(/\b\w/g, (c) => c.toUpperCase());
 
-function TripCard({ trip, onPress }: { trip: TripSummary; onPress: () => void }) {
+function TripCard({
+  trip,
+  onPress,
+}: {
+  trip: TripSummary;
+  onPress: () => void;
+}) {
   const city = cityShort(trip.destination);
   const title = `${trip.numDays} ${trip.numDays === 1 ? "Day" : "Days"} in ${titleCase(city)}`;
   const budget = trip.budgetBreakdown;
@@ -60,11 +66,21 @@ function TripCard({ trip, onPress }: { trip: TripSummary; onPress: () => void })
     >
       <View className="relative h-[210px] bg-[#E7EAF0]">
         {coverUri ? (
-          <Image source={coverUri} contentFit="cover" style={{ width: "100%", height: "100%" }} />
+          <Image
+            source={coverUri}
+            contentFit="cover"
+            style={{ width: "100%", height: "100%" }}
+          />
         ) : null}
         <LinearGradient
           colors={["transparent", "rgba(0,0,0,0.55)"]}
-          style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 120 }}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 120,
+          }}
         />
 
         {/* Days badge */}
@@ -77,10 +93,14 @@ function TripCard({ trip, onPress }: { trip: TripSummary; onPress: () => void })
 
         {/* Title overlay */}
         <View className="absolute bottom-4 left-4">
-          <Text className="text-[26px] font-extrabold tracking-tight text-white">{title}</Text>
+          <Text className="text-[26px] font-extrabold tracking-tight text-white">
+            {title}
+          </Text>
           <View className="mt-0.5 flex-row items-center gap-1">
             <SymbolView name="mappin" size={14} tintColor="#FFFFFF" />
-            <Text className="text-[15px] font-medium text-white/95">{city}</Text>
+            <Text className="text-[15px] font-medium text-white/95">
+              {city}
+            </Text>
           </View>
         </View>
       </View>
@@ -90,12 +110,19 @@ function TripCard({ trip, onPress }: { trip: TripSummary; onPress: () => void })
         <View className="flex-row items-center gap-2">
           <SymbolView name="wallet.bifold" size={17} tintColor={MUTED} />
           <Text className="text-[15px] font-medium text-[#8A94A6]">
-            {budget ? `Est. ${money(budget.currency, budget.totalPerPerson)} / person` : "Planning…"}
+            {budget
+              ? `Est. ${money(budget.currency, budget.totalPerPerson)} / person`
+              : "Planning…"}
           </Text>
         </View>
         <View className="flex-row items-center gap-1">
           <Text className="text-[15px] font-semibold text-[#2F6BE4]">View</Text>
-          <SymbolView name="chevron.right" size={12} tintColor={BLUE} weight="semibold" />
+          <SymbolView
+            name="chevron.right"
+            size={12}
+            tintColor={BLUE}
+            weight="semibold"
+          />
         </View>
       </View>
     </Pressable>
@@ -125,7 +152,11 @@ export default function Trips() {
     let active = true;
     listTrips(getToken)
       .then((data) => active && setTrips(data))
-      .catch((e) => active && setError(e instanceof Error ? e.message : "Failed to load trips"));
+      .catch(
+        (e) =>
+          active &&
+          setError(e instanceof Error ? e.message : "Failed to load trips"),
+      );
     return () => {
       active = false;
     };
@@ -149,12 +180,21 @@ export default function Trips() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 120 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        contentContainerStyle={{
+          paddingTop: insets.top + 8,
+          paddingBottom: 120,
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         {/* Header */}
-        <Text className="px-6 text-4xl font-extrabold tracking-tight text-[#0F1B2D]">Trips</Text>
-        <Text className="mt-1 px-6 text-[16px] font-medium text-[#8A94A6]">{subtitle}</Text>
+        <Text className="px-6 text-4xl font-extrabold tracking-tight text-[#0F1B2D]">
+          Trips
+        </Text>
+        <Text className="mt-1 px-6 text-[16px] font-medium text-[#8A94A6]">
+          {subtitle}
+        </Text>
 
         {trips === null && !error ? (
           <View className="mt-24 items-center">
@@ -164,12 +204,16 @@ export default function Trips() {
 
         {error ? (
           <View className="mt-24 items-center px-10">
-            <Text className="text-center text-[15px] font-medium text-[#8A94A6]">{error}</Text>
+            <Text className="text-center text-[15px] font-medium text-[#8A94A6]">
+              {error}
+            </Text>
             <Pressable
               onPress={load}
               className="mt-4 rounded-full bg-[#2F6BE4] px-5 py-2.5"
             >
-              <Text className="text-[15px] font-semibold text-white">Try again</Text>
+              <Text className="text-[15px] font-semibold text-white">
+                Try again
+              </Text>
             </Pressable>
           </View>
         ) : null}
@@ -177,7 +221,9 @@ export default function Trips() {
         {trips && trips.length === 0 && !error ? (
           <View className="mt-24 items-center px-10">
             <SymbolView name="map" size={44} tintColor="#C7CDD8" />
-            <Text className="mt-4 text-[18px] font-bold text-[#0F1B2D]">No trips yet</Text>
+            <Text className="mt-4 text-[18px] font-bold text-[#0F1B2D]">
+              No trips yet
+            </Text>
             <Text className="mt-1 text-center text-[15px] font-medium text-[#8A94A6]">
               Plan your first trip and it&apos;ll show up here.
             </Text>
@@ -185,13 +231,19 @@ export default function Trips() {
               onPress={() => router.push("/generate-trip")}
               className="mt-5 rounded-full bg-[#2F6BE4] px-5 py-3"
             >
-              <Text className="text-[15px] font-bold text-white">Plan a trip</Text>
+              <Text className="text-[15px] font-bold text-white">
+                Plan a trip
+              </Text>
             </Pressable>
           </View>
         ) : null}
 
         {trips?.map((trip) => (
-          <TripCard key={trip.id} trip={trip} onPress={() => router.push(`/trip/${trip.id}`)} />
+          <TripCard
+            key={trip.id}
+            trip={trip}
+            onPress={() => router.push(`/trip/${trip.id}`)}
+          />
         ))}
       </ScrollView>
     </View>

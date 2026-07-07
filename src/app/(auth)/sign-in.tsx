@@ -1,4 +1,10 @@
-import { Text, View, Pressable, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  Text,
+  View,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -44,7 +50,11 @@ export default function SignIn() {
 
         {/* Google button */}
         <Pressable
-          style={[styles.whiteButton, styles.firstButton, busy && styles.buttonDisabled]}
+          style={[
+            styles.whiteButton,
+            styles.firstButton,
+            busy && styles.buttonDisabled,
+          ]}
           disabled={busy}
           onPress={() => signInWith("oauth_google")}
         >

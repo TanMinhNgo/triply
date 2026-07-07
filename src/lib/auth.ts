@@ -4,8 +4,7 @@ import { serverEnv } from "./env";
 const isDev = process.env.NODE_ENV !== "production";
 
 export type AuthResult =
-  | { userId: string; reason?: undefined }
-  | { userId: null; reason: string };
+  { userId: string; reason?: undefined } | { userId: null; reason: string };
 
 // Verifies the Clerk session token sent by the app as `Authorization: Bearer <jwt>`
 // and returns the authenticated Clerk user id (or a reason it failed).
@@ -25,13 +24,18 @@ export async function getAuthUserId(request: Request): Promise<AuthResult> {
   try {
     secretKey = serverEnv.clerkSecretKey;
   } catch (error) {
-    return { userId: null, reason: error instanceof Error ? error.message : "Missing CLERK_SECRET_KEY" };
+    return {
+      userId: null,
+      reason:
+        error instanceof Error ? error.message : "Missing CLERK_SECRET_KEY",
+    };
   }
 
   try {
     const payload = await verifyToken(token, { secretKey });
     // `sub` is the Clerk user id.
-    if (!payload.sub) return { userId: null, reason: "Verified token has no `sub`" };
+    if (!payload.sub)
+      return { userId: null, reason: "Verified token has no `sub`" };
     return { userId: payload.sub };
   } catch (error) {
     return {

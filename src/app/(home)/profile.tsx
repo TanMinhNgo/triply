@@ -2,7 +2,14 @@ import { useClerk, useUser } from "@clerk/expo";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useState } from "react";
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const CARD_SHADOW = {
@@ -41,7 +48,9 @@ const SUPPORT_ROWS = [
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <Text className="mb-2 mt-7 px-6 text-[15px] font-semibold text-[#8A94A6]">{title}</Text>
+    <Text className="mb-2 mt-7 px-6 text-[15px] font-semibold text-[#8A94A6]">
+      {title}
+    </Text>
   );
 }
 
@@ -61,8 +70,12 @@ function Row({
       className={`flex-row items-center px-4 py-4 ${isFirst ? "" : "border-t border-[#F0F2F5]"}`}
     >
       <SymbolView name={icon} size={22} tintColor="#4B5563" />
-      <Text className="ml-3.5 flex-1 text-[17px] font-medium text-[#111827]">{label}</Text>
-      {chevron ? <SymbolView name="chevron.right" size={15} tintColor="#C7CDD6" /> : null}
+      <Text className="ml-3.5 flex-1 text-[17px] font-medium text-[#111827]">
+        {label}
+      </Text>
+      {chevron ? (
+        <SymbolView name="chevron.right" size={15} tintColor="#C7CDD6" />
+      ) : null}
     </Pressable>
   );
 }
@@ -127,7 +140,10 @@ export default function Profile() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: insets.top + 8, paddingBottom: 120 }}
+        contentContainerStyle={{
+          paddingTop: insets.top + 8,
+          paddingBottom: 120,
+        }}
       >
         {/* Title */}
         <Text className="px-6 text-4xl font-extrabold tracking-tight text-[#0F1B2D]">
@@ -139,14 +155,18 @@ export default function Profile() {
           <Card>
             <View className="flex-row items-center px-4 py-4">
               <View className="h-[72px] w-[72px] items-center justify-center rounded-full bg-[#22488F]">
-                <Text className="text-[30px] font-bold text-white">{initial}</Text>
+                <Text className="text-[30px] font-bold text-white">
+                  {initial}
+                </Text>
               </View>
               <View className="ml-4 flex-1">
                 <Text className="text-[22px] font-bold tracking-tight text-[#0F1B2D]">
                   {fullName}
                 </Text>
                 {email ? (
-                  <Text className="mt-0.5 text-[15px] text-[#8A94A6]">{email}</Text>
+                  <Text className="mt-0.5 text-[15px] text-[#8A94A6]">
+                    {email}
+                  </Text>
                 ) : null}
               </View>
             </View>
@@ -163,12 +183,18 @@ export default function Profile() {
                   className={`flex-1 items-center ${i > 0 ? "border-l border-[#F0F2F5]" : ""}`}
                 >
                   <View className="h-11 w-11 items-center justify-center rounded-full bg-[#EAF1FE]">
-                    <SymbolView name={stat.icon} size={20} tintColor="#3A6EDA" />
+                    <SymbolView
+                      name={stat.icon}
+                      size={20}
+                      tintColor="#3A6EDA"
+                    />
                   </View>
                   <Text className="mt-2 text-[22px] font-extrabold tracking-tight text-[#0F1B2D]">
                     {stat.value}
                   </Text>
-                  <Text className="mt-0.5 text-[15px] text-[#8A94A6]">{stat.label}</Text>
+                  <Text className="mt-0.5 text-[15px] text-[#8A94A6]">
+                    {stat.label}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -179,7 +205,12 @@ export default function Profile() {
         <SectionHeader title="Account" />
         <Card>
           {ACCOUNT_ROWS.map((row, i) => (
-            <Row key={row.label} icon={row.icon} label={row.label} isFirst={i === 0} />
+            <Row
+              key={row.label}
+              icon={row.icon}
+              label={row.label}
+              isFirst={i === 0}
+            />
           ))}
         </Card>
 
@@ -187,7 +218,12 @@ export default function Profile() {
         <SectionHeader title="Preferences" />
         <Card>
           {PREFERENCE_ROWS.map((row, i) => (
-            <Row key={row.label} icon={row.icon} label={row.label} isFirst={i === 0} />
+            <Row
+              key={row.label}
+              icon={row.icon}
+              label={row.label}
+              isFirst={i === 0}
+            />
           ))}
         </Card>
 
@@ -211,8 +247,14 @@ export default function Profile() {
           className="mx-6 mt-6 flex-row items-center justify-center gap-2 rounded-[20px] border border-[#EDEFF3] bg-white py-4"
           style={CARD_SHADOW}
         >
-          <SymbolView name="rectangle.portrait.and.arrow.right" size={20} tintColor="#111827" />
-          <Text className="text-[17px] font-semibold text-[#111827]">Log out</Text>
+          <SymbolView
+            name="rectangle.portrait.and.arrow.right"
+            size={20}
+            tintColor="#111827"
+          />
+          <Text className="text-[17px] font-semibold text-[#111827]">
+            Log out
+          </Text>
         </Pressable>
 
         {/* Delete account */}
@@ -227,13 +269,17 @@ export default function Profile() {
           ) : (
             <>
               <SymbolView name="trash" size={20} tintColor="#EF4444" />
-              <Text className="text-[17px] font-semibold text-[#EF4444]">Delete account</Text>
+              <Text className="text-[17px] font-semibold text-[#EF4444]">
+                Delete account
+              </Text>
             </>
           )}
         </Pressable>
 
         {/* Version */}
-        <Text className="mt-6 text-center text-[14px] text-[#B0B7C3]">Triply v1.0.0</Text>
+        <Text className="mt-6 text-center text-[14px] text-[#B0B7C3]">
+          Triply v1.0.0
+        </Text>
       </ScrollView>
     </View>
   );

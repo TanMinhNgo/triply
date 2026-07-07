@@ -1,8 +1,8 @@
 import {
-    CLERK_USER_CREATED,
-    CLERK_USER_DELETED,
-    CLERK_USER_UPDATED,
-    inngest,
+  CLERK_USER_CREATED,
+  CLERK_USER_DELETED,
+  CLERK_USER_UPDATED,
+  inngest,
 } from "@/inngest/client";
 import { Webhook } from "svix";
 
