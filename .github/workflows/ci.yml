@@ -11,6 +11,8 @@ jobs:
     env:
       CI: "1"
       EXPO_NO_TELEMETRY: "1"
+      # Public dummy key used only so Expo static export can evaluate ClerkProvider.
+      EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_ZHVtbXkuY2xlcmsuYWNjb3VudHMuZGV2JA"
 
     steps:
       - name: Checkout
